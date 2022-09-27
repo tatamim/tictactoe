@@ -57,8 +57,7 @@ impl Display for Game {
                 writeln!(f)?;
             }
         }
-        writeln!(f, "   |   |   ")?;
-        std::fmt::Result::Ok(())
+        writeln!(f, "   |   |   ")
     }
 }
 
