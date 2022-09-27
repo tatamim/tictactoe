@@ -19,6 +19,7 @@ fn main() -> Result<()> {
             let mut str = String::new();
             if stdin().read_line(&mut str).is_err() {
                 println!("Could not read the line");
+                continue;
             }
             match str
                 .trim()
