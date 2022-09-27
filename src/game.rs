@@ -37,27 +37,25 @@ impl Display for Player {
 
 impl Display for Game {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "   |   |   ")?;
+        writeln!(f, " ___________")?;
+        writeln!(f, "|   |   |   |")?;
         for i in 1..=9 {
             let (y, x) = get_coords(i).map_err(|_| std::fmt::Error)?;
             if y != 0 && x == 0 {
-                writeln!(f, "___|___|___")?;
-                writeln!(f, "   |   |   ")?;
-            }
-            if x != 0 {
-                write!(f, "|")?;
+                writeln!(f, "|___|___|___|")?;
+                writeln!(f, "|   |   |   |")?;
             }
             let str = match self.arr_squares[y][x] {
                 Some(Player::X) => "X".to_owned(),
                 Some(Player::O) => "O".to_owned(),
                 None => i.to_string(),
             };
-            write!(f, " {} ", str)?;
+            write!(f, "| {} ", str)?;
             if x == 2 {
-                writeln!(f)?;
+                writeln!(f, "|")?;
             }
         }
-        writeln!(f, "   |   |   ")
+        write!(f, "|___|___|___|")
     }
 }
 
@@ -186,29 +184,31 @@ mod tests {
     fn display_game() -> Result<()> {
         let mut game = Game::new();
         assert_eq!(
-            "   |   |   
- 1 | 2 | 3 
-___|___|___
-   |   |   
- 4 | 5 | 6 
-___|___|___
-   |   |   
- 7 | 8 | 9 
-   |   |   \n"
+            " ___________
+|   |   |   |
+| 1 | 2 | 3 |
+|___|___|___|
+|   |   |   |
+| 4 | 5 | 6 |
+|___|___|___|
+|   |   |   |
+| 7 | 8 | 9 |
+|___|___|___|"
                 .to_owned(),
             game.to_string()
         );
         game.make_move(1)?;
         assert_eq!(
-            "   |   |   
- X | 2 | 3 
-___|___|___
-   |   |   
- 4 | 5 | 6 
-___|___|___
-   |   |   
- 7 | 8 | 9 
-   |   |   \n"
+            " ___________
+|   |   |   |
+| X | 2 | 3 |
+|___|___|___|
+|   |   |   |
+| 4 | 5 | 6 |
+|___|___|___|
+|   |   |   |
+| 7 | 8 | 9 |
+|___|___|___|"
                 .to_owned(),
             game.to_string()
         );
