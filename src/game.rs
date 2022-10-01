@@ -3,7 +3,7 @@
 use std::fmt::Display;
 
 use anyhow::{anyhow, Ok, Result};
-use colored::Colorize;
+use colored::{ColoredString, Colorize};
 
 /// Represents the player, but also any square they have played
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -16,6 +16,7 @@ pub enum Player {
 pub struct Game {
     next_player: Player,
     arr_squares: [[Option<Player>; 3]; 3],
+    last_played: Option<usize>,
 }
 
 impl Player {
@@ -25,14 +26,22 @@ impl Player {
             Self::O => Self::X,
         }
     }
+
+    fn colored(&self) -> ColoredString {
+        match self {
+            Self::X => "X".blue(),
+            Self::O => "O".red(),
+        }
+    }
+
+    fn colored_highlighted(&self) -> ColoredString {
+        self.colored().bold().underline()
+    }
 }
 
 impl Display for Player {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::X => write!(f, "{}", "X".blue()),
-            Self::O => write!(f, "{}", "O".red()),
-        }
+        write!(f, "{}", self.colored())
     }
 }
 
@@ -47,6 +56,9 @@ impl Display for Game {
                 writeln!(f, "|   |   |   |")?;
             }
             let str = match self.arr_squares[y][x] {
+                Some(player) if Some(i) == self.last_played => {
+                    player.colored_highlighted().to_string()
+                }
                 Some(player) => player.to_string(),
                 None => i.to_string(),
             };
@@ -68,6 +80,7 @@ impl Game {
         Self {
             next_player: Player::X,
             arr_squares,
+            last_played: None,
         }
     }
 
@@ -92,6 +105,7 @@ impl Game {
             None => {
                 let current_player = target.insert(self.next_player);
                 self.next_player = current_player.next();
+                self.last_played = Some(i);
                 Ok(())
             }
             Some(player) => Err(anyhow!(format!(
@@ -199,7 +213,8 @@ mod tests {
         );
         game.make_move(1)?;
         assert_eq!(
-            format!(" ___________
+            format!(
+                " ___________
 |   |   |   |
 | {} | 2 | 3 |
 |___|___|___|
@@ -208,7 +223,27 @@ mod tests {
 |___|___|___|
 |   |   |   |
 | 7 | 8 | 9 |
-|___|___|___|", X),
+|___|___|___|",
+                X.colored_highlighted()
+            ),
+            game.to_string()
+        );
+        game.make_move(2)?;
+        assert_eq!(
+            format!(
+                " ___________
+|   |   |   |
+| {} | {} | 3 |
+|___|___|___|
+|   |   |   |
+| 4 | 5 | 6 |
+|___|___|___|
+|   |   |   |
+| 7 | 8 | 9 |
+|___|___|___|",
+                X.colored(),
+                O.colored_highlighted()
+            ),
             game.to_string()
         );
         Ok(())
