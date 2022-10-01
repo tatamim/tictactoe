@@ -3,6 +3,7 @@
 use std::fmt::Display;
 
 use anyhow::{anyhow, Ok, Result};
+use colored::Colorize;
 
 /// Represents the player, but also any square they have played
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -29,8 +30,8 @@ impl Player {
 impl Display for Player {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::X => write!(f, "X"),
-            Self::O => write!(f, "O"),
+            Self::X => write!(f, "{}", "X".blue()),
+            Self::O => write!(f, "{}", "O".red()),
         }
     }
 }
@@ -46,8 +47,7 @@ impl Display for Game {
                 writeln!(f, "|   |   |   |")?;
             }
             let str = match self.arr_squares[y][x] {
-                Some(Player::X) => "X".to_owned(),
-                Some(Player::O) => "O".to_owned(),
+                Some(player) => player.to_string(),
                 None => i.to_string(),
             };
             write!(f, "| {} ", str)?;
@@ -176,8 +176,8 @@ mod tests {
 
     #[test]
     fn display_player() {
-        assert_eq!("X".to_owned(), X.to_string());
-        assert_eq!("O".to_owned(), O.to_string());
+        assert_eq!("X".blue().to_string(), X.to_string());
+        assert_eq!("O".red().to_string(), O.to_string());
     }
 
     #[test]
@@ -199,17 +199,16 @@ mod tests {
         );
         game.make_move(1)?;
         assert_eq!(
-            " ___________
+            format!(" ___________
 |   |   |   |
-| X | 2 | 3 |
+| {} | 2 | 3 |
 |___|___|___|
 |   |   |   |
 | 4 | 5 | 6 |
 |___|___|___|
 |   |   |   |
 | 7 | 8 | 9 |
-|___|___|___|"
-                .to_owned(),
+|___|___|___|", X),
             game.to_string()
         );
         Ok(())
