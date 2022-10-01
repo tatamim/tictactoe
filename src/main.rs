@@ -21,8 +21,12 @@ fn main() -> Result<()> {
                 println!("Could not read the line");
                 continue;
             }
+            let str = str.trim();
+            match str {
+                "q" | "quit" | "exit" => return Ok(()),
+                _ => {}
+            }
             match str
-                .trim()
                 .parse::<usize>()
                 .map_err(|err: ParseIntError| anyhow!(err))
                 .and_then(|i| game.make_move(i))
