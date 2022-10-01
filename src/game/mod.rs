@@ -1,48 +1,18 @@
 //! A 2-player tic-tac-toe game
 
+mod player;
+
 use std::fmt::Display;
 
 use anyhow::{anyhow, Ok, Result};
-use colored::{ColoredString, Colorize};
 
-/// Represents the player, but also any square they have played
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum Player {
-    X,
-    O,
-}
+pub use player::Player;
 
 /// Represents the game board itself
 pub struct Game {
     next_player: Player,
     arr_squares: [[Option<Player>; 3]; 3],
     last_played: Option<usize>,
-}
-
-impl Player {
-    fn next(&self) -> Self {
-        match self {
-            Self::X => Self::O,
-            Self::O => Self::X,
-        }
-    }
-
-    fn colored(&self) -> ColoredString {
-        match self {
-            Self::X => "X".blue(),
-            Self::O => "O".red(),
-        }
-    }
-
-    fn colored_highlighted(&self) -> ColoredString {
-        self.colored().bold().underline()
-    }
-}
-
-impl Display for Player {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.colored())
-    }
 }
 
 impl Display for Game {
@@ -179,20 +149,6 @@ fn get_coords(i: usize) -> Result<(usize, usize)> {
 mod tests {
     use super::*;
     use Player::*;
-
-    #[test]
-    fn next_player() {
-        let x = X;
-        let o = x.next();
-        assert_eq!(O, o);
-        assert_eq!(X, o.next());
-    }
-
-    #[test]
-    fn display_player() {
-        assert_eq!("X".blue().to_string(), X.to_string());
-        assert_eq!("O".red().to_string(), O.to_string());
-    }
 
     #[test]
     fn display_game() -> Result<()> {
