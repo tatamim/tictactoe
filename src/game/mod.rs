@@ -68,8 +68,8 @@ impl Game {
     /// error variant is returned. If an error is returned, it must be guaranteed that the turn was
     /// not advanced to the next player.
     pub fn make_move(&mut self, i: usize) -> Result<()> {
-        let coords = get_coords(i)?;
-        let target = &mut self.arr_squares[coords.0][coords.1];
+        let (y, x) = get_coords(i)?;
+        let target = &mut self.arr_squares[y][x];
 
         match target {
             None => {
